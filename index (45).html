@@ -1,0 +1,527 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EthOS Blaster</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Fredoka One', cursive;
+      background: linear-gradient(180deg, #a8edea 0%, #fed6e3 100%);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 1.5rem 1.5rem 3rem;
+      color: #2d3748;
+      user-select: none;
+    }
+    #gameCanvas {
+      border-radius: 1rem;
+      box-shadow: 0 0 0 6px #fcd34d, 0 0 15px 8px #fbbf24, 0 0 30px 12px #f59e0b;
+      max-width: 100%;
+      height: auto;
+      background: #fef3c7;
+      display: block;
+      margin: 0 auto;
+      border: 4px solid #fbbf24;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 4px 2px rgba(0,0,0,0.15));
+    }
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 12px 3px #fbbf24;
+    }
+    header {
+      width: 100%;
+      max-width: 5xl;
+      margin-bottom: 2rem;
+      padding: 0 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    header h1 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 2rem;
+      color: #f59e0b;
+      text-shadow: 2px 2px 0 #b45309, 4px 4px 0 #78350f;
+      user-select: none;
+      flex-grow: 1;
+      max-width: 100%;
+    }
+    nav {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-pokemon {
+      font-family: 'Fredoka One', cursive;
+      background: linear-gradient(145deg, #fbbf24, #f59e0b);
+      border: 3px solid #b45309;
+      border-radius: 12px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+      text-shadow: 1px 1px 2px #78350f;
+      box-shadow: inset 0 3px 0 #fcd34d, 0 5px 0 #78350f;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+      transition: all 0.15s ease-in-out;
+      white-space: nowrap;
+    }
+    .btn-pokemon i {
+      font-size: 1.1rem;
+      filter: drop-shadow(1px 1px 1px #78350f);
+    }
+    .btn-pokemon:hover {
+      background: linear-gradient(145deg, #f59e0b, #fbbf24);
+      box-shadow: inset 0 3px 0 #fcd34d, 0 7px 0 #78350f;
+      transform: translateY(-2px);
+    }
+    .btn-pokemon:active {
+      box-shadow: inset 0 3px 0 #78350f;
+      transform: translateY(1px);
+    }
+    #ui {
+      background: #fef3c7;
+      border: 4px solid #fbbf24;
+      border-radius: 1rem;
+      padding: 1rem 2rem;
+      box-shadow: 0 0 10px #fbbf24aa, inset 0 0 8px #fcd34dcc;
+      user-select: none;
+      max-width: 800px;
+      margin: 1.5rem auto 0;
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #b45309;
+      text-shadow: 1px 1px 0 #fcd34d;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      align-items: center;
+    }
+    #ui > div {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      white-space: nowrap;
+    }
+    #ui i {
+      color: #f59e0b;
+      font-size: 1.5rem;
+      filter: drop-shadow(1px 1px 1px #78350f);
+    }
+    #gameOverBox {
+      background: #fef3c7;
+      border: 5px solid #b45309;
+      box-shadow: 0 0 20px #fbbf24, inset 0 0 15px #fcd34d;
+      border-radius: 1.5rem;
+      padding: 2rem 3rem;
+      max-width: 480px;
+      margin: auto;
+      user-select: none;
+      color: #b45309;
+      text-shadow: 1px 1px 0 #78350f;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    #gameOverBox h2 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #dc2626;
+      text-shadow: 2px 2px 0 #7f1d1d, 4px 4px 0 #b91c1c;
+    }
+    #gameOverBox p {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      color: #92400e;
+      font-weight: 700;
+    }
+    #gameOverBox i {
+      font-size: 5rem;
+      color: #dc2626;
+      filter: drop-shadow(0 0 8px #dc2626);
+      margin-bottom: 1rem;
+      animation: pulseRed 1.5s infinite alternate;
+    }
+    @keyframes pulseRed {
+      0% { filter: drop-shadow(0 0 8px #dc2626); }
+      100% { filter: drop-shadow(0 0 20px #b91c1c); }
+    }
+    kbd {
+      background-color: #fbbf24;
+      color: #78350f;
+      border-radius: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      font-weight: 900;
+      font-size: 0.85rem;
+      font-family: 'Press Start 2P', cursive;
+      box-shadow: inset 0 -2px 0 #b45309, 0 2px 4px rgb(0 0 0 / 0.15);
+      user-select: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    footer {
+      color: #b45309;
+      font-weight: 700;
+      margin-top: 3rem;
+      user-select: none;
+      font-family: 'Fredoka One', cursive;
+      text-shadow: 1px 1px 0 #fcd34d;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 640px) {
+      #ui {
+        flex-direction: column;
+        gap: 1rem;
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+        align-items: flex-start;
+      }
+      header h1 {
+        font-size: 1.5rem;
+      }
+      nav {
+        gap: 0.75rem;
+      }
+      .btn-pokemon {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        gap: 0.5rem;
+      }
+      #gameOverBox {
+        padding: 1.5rem 2rem;
+        max-width: 90vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EthOS Blaster</h1>
+    <nav id="controls" aria-label="Game controls">
+      <button id="btnJump" aria-label="Jump (Space)" class="btn-pokemon" type="button">
+        <i class="fas fa-parachute-box"></i> Jump (Space)
+      </button>
+      <button id="btnShoot" aria-label="Shoot (Enter)" class="btn-pokemon" type="button">
+        <i class="fas fa-crosshairs"></i> Shoot (Enter)
+      </button>
+    </nav>
+  </header>
+
+  <section class="w-full max-w-5xl rounded-xl p-4 relative" style="background: #fef3c7; box-shadow: inset 0 0 30px #fbbf24aa;">
+    <canvas id="gameCanvas" width="800" height="400" role="img" aria-label="EthOS Blaster game canvas showing player, enemies, bullets, and background"></canvas>
+
+    <div id="ui" aria-live="polite" aria-atomic="true" class="mt-6" role="region" aria-label="Game status">
+      <div id="score" class="flex items-center gap-3">
+        <i class="fas fa-star"></i> Score: 0
+      </div>
+      <div id="health" class="flex items-center gap-3">
+        <i class="fas fa-heart"></i> Health: 3
+      </div>
+      <div id="level" class="flex items-center gap-3">
+        <i class="fas fa-layer-group"></i> Level: 1
+      </div>
+    </div>
+
+    <div id="gameOverBox" role="alert" aria-live="assertive">
+      <i class="fas fa-skull-crossbones"></i>
+      <h2>Game Over!</h2>
+      <p>Refresh the page or press <kbd>R</kbd> to restart.</p>
+      <button id="restartBtn" class="btn-pokemon px-8 py-3 text-lg" type="button">
+        Restart Game
+      </button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 EthOS Blaster &mdash; Crafted with Tailwind CSS &amp; ❤️
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Sound effects
+    const shootSound = new Audio('https://raw.githubusercontent.com/singlakrishna243-oss/Song/main/gun-shot-350315_wtD7wvg5.mp3');
+    const hitSound = new Audio('https://media1.vocaroo.com/mp3/19sLasLVoq87');
+    const gameOverSound = new Audio('https://audio-previews.elements.envatousercontent.com/files/316721707/preview.mp3');
+
+    // Load images
+    const ethImg = new Image();
+    ethImg.src = 'https://placehold.co/80x80/png?text=ETH+Player&font=Fredoka+One&fontSize=18&bg=fff3c7&txtclr=f59e0b';
+    ethImg.alt = "Pixel art style Ethereum logo character in orange and yellow tones, standing ready to jump or shoot";
+
+    const btcImg = new Image();
+    btcImg.src = 'https://placehold.co/80x80/png?text=BTC+Enemy&font=Fredoka+One&fontSize=18&bg=fff3c7&txtclr=f59e0b';
+    btcImg.alt = "Pixel art style Bitcoin logo character in orange and yellow tones, cartoon mascot style, moving left";
+
+    const backgroundImg = new Image();
+    backgroundImg.src = 'https://placehold.co/800x400/png?text=Game+Background+Desert+Scene&font=Fredoka+One&fontSize=24&bg=fef3c7&txtclr=fbbf24';
+    backgroundImg.alt = "Pixel art style desert background with sandy ground and clear sky in warm pastel colors";
+
+    const player = {
+      x: 50,
+      y: 300,
+      width: 80,
+      height: 80,
+      vy: 0,
+      gravity: 1.5,
+      jumpStrength: -20,
+      grounded: true,
+      health: 3
+    };
+
+    const bullets = [];
+    const enemies = [];
+    let score = 0;
+    let level = 1;
+    let gameOver = false;
+
+    const scoreEl = document.getElementById('score');
+    const healthEl = document.getElementById('health');
+    const levelEl = document.getElementById('level');
+    const gameOverBox = document.getElementById('gameOverBox');
+    const restartBtn = document.getElementById('restartBtn');
+    const btnJump = document.getElementById('btnJump');
+    const btnShoot = document.getElementById('btnShoot');
+
+    // Level thresholds and enemy speed base
+    const levelThresholds = [0, 10, 25, 45, 70, 100, 135, 175, 220, 270]; // score needed for each level 1-10
+    const maxLevel = levelThresholds.length;
+
+    function getLevel(score) {
+      for (let i = maxLevel - 1; i >= 0; i--) {
+        if (score >= levelThresholds[i]) return i + 1;
+      }
+      return 1;
+    }
+
+    function getEnemySpeed(level) {
+      // Base speed 3, increase by 0.7 per level, capped at 10
+      return Math.min(3 + (level - 1) * 0.7, 10);
+    }
+
+    function drawPlayer() {
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(ethImg, player.x, player.y, player.width, player.height);
+      ctx.restore();
+    }
+
+    function drawBullet(bullet) {
+      ctx.save();
+      ctx.fillStyle = '#fbbf24';
+      ctx.shadowColor = '#b45309';
+      ctx.shadowBlur = 10;
+      ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+      ctx.restore();
+    }
+
+    function drawEnemy(enemy) {
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(enemy.logo, enemy.x, enemy.y, enemy.width, enemy.height);
+      ctx.restore();
+    }
+
+    function jump() {
+      if (gameOver) return;
+      if (player.grounded) {
+        player.vy = player.jumpStrength;
+        player.grounded = false;
+      }
+    }
+
+    function shoot() {
+      if (gameOver) return;
+      shootSound.currentTime = 0;
+      shootSound.play();
+      bullets.push({
+        x: player.x + player.width,
+        y: player.y + player.height / 2 - 5,
+        width: 15,
+        height: 5,
+        speed: 10
+      });
+    }
+
+    function spawnEnemy() {
+      if (gameOver) return;
+      enemies.push({
+        x: canvas.width,
+        y: 300,
+        width: 80,
+        height: 80,
+        speed: getEnemySpeed(level),
+        logo: btcImg
+      });
+    }
+
+    function resetGame() {
+      score = 0;
+      level = 1;
+      player.health = 3;
+      player.y = 300;
+      player.vy = 0;
+      player.grounded = true;
+      bullets.length = 0;
+      enemies.length = 0;
+      gameOver = false;
+      scoreEl.innerHTML = `<i class="fas fa-star"></i> Score: 0`;
+      healthEl.innerHTML = `<i class="fas fa-heart"></i> Health: 3`;
+      levelEl.innerHTML = `<i class="fas fa-layer-group"></i> Level: 1`;
+      gameOverBox.style.display = 'none';
+      update();
+    }
+
+    function update() {
+      if (gameOver) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw background
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+
+      // Ground
+      ctx.fillStyle = '#f4a261';
+      ctx.fillRect(0, 350, canvas.width, 50);
+
+      // Player physics
+      player.vy += player.gravity;
+      player.y += player.vy;
+      if (player.y + player.height >= 350) {
+        player.y = 350 - player.height;
+        player.vy = 0;
+        player.grounded = true;
+      }
+      drawPlayer();
+
+      // Bullets
+      for (let i = bullets.length - 1; i >= 0; i--) {
+        bullets[i].x += bullets[i].speed;
+        drawBullet(bullets[i]);
+        if (bullets[i].x > canvas.width) {
+          bullets.splice(i, 1);
+        }
+      }
+
+      // Enemies
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i];
+        enemy.x -= enemy.speed;
+        drawEnemy(enemy);
+
+        // Player collision
+        if (
+          player.x < enemy.x + enemy.width &&
+          player.x + player.width > enemy.x &&
+          player.y < enemy.y + enemy.height &&
+          player.y + player.height > enemy.y
+        ) {
+          enemies.splice(i, 1);
+          player.health--;
+          healthEl.innerHTML = `<i class="fas fa-heart"></i> Health: ${player.health}`;
+          if (player.health <= 0) {
+            gameOverSound.play();
+            gameOver = true;
+            gameOverBox.style.display = 'flex';
+          }
+          continue;
+        }
+
+        // Bullet collision
+        for (let j = bullets.length - 1; j >= 0; j--) {
+          const bullet = bullets[j];
+          if (
+            bullet.x < enemy.x + enemy.width &&
+            bullet.x + bullet.width > enemy.x &&
+            bullet.y < enemy.y + enemy.height &&
+            bullet.y + bullet.height > enemy.y
+          ) {
+            hitSound.currentTime = 0;
+            hitSound.play();
+            bullets.splice(j, 1);
+            enemies.splice(i, 1);
+            score++;
+            // Update level based on score thresholds
+            const newLevel = getLevel(score);
+            if (newLevel !== level) {
+              level = newLevel;
+              levelEl.innerHTML = `<i class="fas fa-layer-group"></i> Level: ${level}`;
+            }
+            scoreEl.innerHTML = `<i class="fas fa-star"></i> Score: ${score}`;
+            break;
+          }
+        }
+
+        if (enemy.x + enemy.width < 0) {
+          enemies.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (gameOver && e.code !== 'KeyR') return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        jump();
+      } else if (e.code === 'Enter') {
+        e.preventDefault();
+        shoot();
+      } else if (e.code === 'KeyR' && gameOver) {
+        resetGame();
+      }
+    });
+
+    btnJump.addEventListener('click', jump);
+    btnShoot.addEventListener('click', shoot);
+    restartBtn.addEventListener('click', resetGame);
+
+    let imagesLoaded = 0;
+    const images = [ethImg, btcImg, backgroundImg];
+    images.forEach((img) => {
+      img.onload = () => {
+        imagesLoaded++;
+        if (imagesLoaded === images.length) {
+          update();
+          setInterval(spawnEnemy, 2000);
+        }
+      };
+      img.onerror = () => {
+        imagesLoaded++;
+        if (imagesLoaded === images.length) {
+          update();
+          setInterval(spawnEnemy, 2000);
+        }
+      };
+    });
+  </script>
+</body>
+</html>
