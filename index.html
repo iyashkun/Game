@@ -258,25 +258,22 @@
   </section>
 
   <footer>
-    &copy; 2025 EthOS Blaster &mdash; Developed by Sreyanshu &amp; ❤️
+    &copy; 2025 EthOS Blaster &mdash; Developed by Sreyanshu
   </footer>
 
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-
-    // Sound effects
     const shootSound = new Audio('https://raw.githubusercontent.com/singlakrishna243-oss/Song/main/gun-shot-350315_wtD7wvg5.mp3');
     const hitSound = new Audio('https://media1.vocaroo.com/mp3/19sLasLVoq87');
     const gameOverSound = new Audio('https://audio-previews.elements.envatousercontent.com/files/316721707/preview.mp3');
 
-    // Load images
     const ethImg = new Image();
-    ethImg.src = 'https://placehold.co/80x80/png?text=ETH+Player&font=Fredoka+One&fontSize=18&bg=fff3c7&txtclr=f59e0b';
+    ethImg.src = 'https://i.postimg.cc/FsGgFVpP/mxvm9qfdsbjhfzycqntl-removebg-preview.png';
     ethImg.alt = "Pixel art style Ethereum logo character in orange and yellow tones, standing ready to jump or shoot";
 
     const btcImg = new Image();
-    btcImg.src = 'https://placehold.co/80x80/png?text=BTC+Enemy&font=Fredoka+One&fontSize=18&bg=fff3c7&txtclr=f59e0b';
+    btcImg.src = 'https://i.postimg.cc/cCC1RZqt/free-bitcoin-character-cartoon-bitcoin-mascot-illustration-of-a-cute-bitcoin-character-mascot-free-v.png';
     btcImg.alt = "Pixel art style Bitcoin logo character in orange and yellow tones, cartoon mascot style, moving left";
 
     const backgroundImg = new Image();
@@ -309,7 +306,6 @@
     const btnJump = document.getElementById('btnJump');
     const btnShoot = document.getElementById('btnShoot');
 
-    // Level thresholds and enemy speed base
     const levelThresholds = [0, 10, 25, 45, 70, 100, 135, 175, 220, 270]; // score needed for each level 1-10
     const maxLevel = levelThresholds.length;
 
@@ -321,7 +317,6 @@
     }
 
     function getEnemySpeed(level) {
-      // Base speed 3, increase by 0.7 per level, capped at 10
       return Math.min(3 + (level - 1) * 0.7, 10);
     }
 
@@ -403,15 +398,12 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw background
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
 
-      // Ground
       ctx.fillStyle = '#f4a261';
       ctx.fillRect(0, 350, canvas.width, 50);
 
-      // Player physics
       player.vy += player.gravity;
       player.y += player.vy;
       if (player.y + player.height >= 350) {
@@ -421,7 +413,6 @@
       }
       drawPlayer();
 
-      // Bullets
       for (let i = bullets.length - 1; i >= 0; i--) {
         bullets[i].x += bullets[i].speed;
         drawBullet(bullets[i]);
@@ -430,13 +421,11 @@
         }
       }
 
-      // Enemies
       for (let i = enemies.length - 1; i >= 0; i--) {
         const enemy = enemies[i];
         enemy.x -= enemy.speed;
         drawEnemy(enemy);
 
-        // Player collision
         if (
           player.x < enemy.x + enemy.width &&
           player.x + player.width > enemy.x &&
@@ -454,7 +443,6 @@
           continue;
         }
 
-        // Bullet collision
         for (let j = bullets.length - 1; j >= 0; j--) {
           const bullet = bullets[j];
           if (
