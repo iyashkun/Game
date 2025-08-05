@@ -7,7 +7,7 @@ import uuid
 
 API_ID = 21472111
 API_HASH = "2a51fd4825b3b947c253f8f9b8f830f7"
-BOT_TOKEN = "8192198859:AAE8wMW7RXrnt3TV4jWRYnoR16Ofx0EmuT4"
+BOT_TOKEN = "8246622394:AAEbHlAtOjM8PLnAJl-Qcbf8AV6p9AsSKV8"
 
 app = Client("sps_pvp_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 db = TinyDB("sps_users.json")
